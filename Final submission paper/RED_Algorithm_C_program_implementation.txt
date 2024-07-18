@@ -1,0 +1,56 @@
+#include <stdio.h>
+int j= 3;    // total number of tasks 
+
+int arrival[100] = { 1 , 2 , 3};    // arrival time of tasks 
+int processing [100] = {2,2,2};    // computation time of respective tasks
+int originaldeadline[100] = {2,2,2};  // actual deadline of the task
+int deadline[100] ;                 // primary relative deadline
+int tolerance[100] ;                // tolerent deadline
+int excesstime[100] = {2,2,2};         //soft deadline
+
+
+int laxity[100];                  // residual laxity L
+int Emax[100];                    // Maximum Exceeding Time​
+
+void calulatedeadline();
+void laxitycalculator();
+
+int main(){
+  calulatedeadline();
+
+laxity[0] = (deadline[0]-processing[0]);                // laxity for 1st task
+printf("laxity of job 1 = %d\n", laxity[0]);            
+
+if(laxity[0] < 0){
+Emax[0] = -(laxity[0] + tolerance[0]);                  
+printf("Emax of job 1 = %d\n", Emax[0]);
+}
+
+laxitycalculator();
+
+}
+
+void calulatedeadline(){
+   for(int i = 0 ; i < j; i++){
+
+    deadline[i] = arrival[i] + originaldeadline[i] ;          // calculating primary deadline
+    tolerance[i] = arrival[i] + excesstime[i] + originaldeadline[i];   // soft deadline
+   }
+}
+
+void laxitycalculator(){
+ for (int i = 1; i < j; i++) {
+  laxity[i] = laxity[i-1] + (deadline[i]- deadline[i-1] ) - processing[i];     // laxity for all tasks
+  printf("laxity of job %d = %d\n", i+1 , laxity[i]);
+
+  if(laxity[i] < 0){
+    printf("laxity of job %d  is less than zero, not schedulable\n", i+1);           
+    Emax[i] = -(laxity[i] + tolerance[i]);                                     // check Emax value
+    printf("Emax of job %d = %d\n", i+1, Emax[i]);
+    if(Emax[i] < 0 ){
+      printf("System is intolerent because of task %d , Emax < 0\n", i+1);
+    }
+  }
+ }
+
+}
